@@ -1,7 +1,9 @@
 import { Button, Row, Container, Col, Card, Form } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
@@ -45,8 +47,10 @@ const Login = () => {
         console.log(errorData);
       }
       const data = await response.json();
+      localStorage.setItem('token',data.idToken)
       console.log(data);
       setFormData({email:'',password:'',confirmPassword:''});
+      navigate('/welcome');
     } catch (error) {
       console.log(error);
     }
