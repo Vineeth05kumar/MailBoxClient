@@ -19,8 +19,6 @@ const WriteMails = () => {
 
   const sendEmail = async (e) => {
     e.preventDefault();
-
-    // const contentState = editorState.getCurrentContent();
     const mailContent = JSON.stringify(editorState);
 
     const emailData = {
@@ -33,7 +31,6 @@ const WriteMails = () => {
 
     console.log(emailData);
 
-    // const mailId = new Date().toISOString();
     const receiverEmail = emailData.to.replace(".", "");
     const senderEmailFormatted = emailData.from.replace(".", "");
 
