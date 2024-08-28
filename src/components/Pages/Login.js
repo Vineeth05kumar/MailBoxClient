@@ -1,14 +1,17 @@
 import { Button, Row, Container, Col, Card, Form } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
+    // confirmPassword: "",
   });
 
   const handleLogin = () => {
@@ -22,10 +25,10 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if(!isLogin && formData.password !== formData.confirmPassword){
-        alert("Passwords do not match");
-        return;
-    }
+    // if(!isLogin && formData.password !== formData.confirmPassword){
+    //     alert("Passwords do not match");
+    //     return;
+    // }
     let url = "";
     url = isLogin
       ? "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDuD4FVkcQkWiLqbTPOrBqU6qwiF_ecFks"
@@ -47,7 +50,7 @@ const Login = () => {
         console.log(errorData);
       }
       const data = await response.json();
-      localStorage.setItem('token',data.idToken)
+      dispatch(authActions.login({token:data.idToken,email:data.email}))
       console.log(data);
       setFormData({email:'',password:'',confirmPassword:''});
       navigate('/welcome');
@@ -84,7 +87,7 @@ const Login = () => {
                     value={formData.password}
                   />
                 </Form.Group>
-                <Form.Group
+                {/* <Form.Group
                   className="mb-3"
                   controlId="formBasicConfirmPassword"
                 >
@@ -96,7 +99,7 @@ const Login = () => {
                     onChange={inputHandler}
                     value={formData.confirmPassword}
                   />
-                </Form.Group>
+                </Form.Group> */}
                 <Button type="submit">{isLogin ? "Login" : "SignUp"}</Button>
               </Form>
             </Card.Body>
