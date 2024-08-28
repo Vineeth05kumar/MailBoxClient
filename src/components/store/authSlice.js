@@ -23,6 +23,9 @@ const authSlice = createSlice({
             localStorage.removeItem('token');
             localStorage.removeItem('senderEmail');
 
+        },
+        revivePage(state,action){
+            state.isLoggedIn = true;
         }
     }
 })

@@ -19,7 +19,7 @@ const WriteMails = () => {
 
   const sendEmail = async (e) => {
     e.preventDefault();
-    const mailContent = JSON.stringify(editorState);
+    const mailContent = editorState.getCurrentContent().getPlainText();
 
     const emailData = {
       to: toEmail,
