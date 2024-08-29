@@ -18,7 +18,7 @@ const Inbox = () => {
           `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${myEmailId}/inbox.json`
         );
         const data = await response.json();
-  
+
         const emailsArray = [];
         if (data) {
           Object.keys(data).forEach((key) => {
@@ -26,14 +26,14 @@ const Inbox = () => {
           });
         }
         dispatch(inboxActions.setMails(emailsArray));
+        console.log(emailsArray);
       } catch (error) {
         console.error("Error fetching emails:", error);
       }
     };
-  
+
     fetchEmails();
   }, [dispatch, myEmailId]);
-  
 
   const handleEmailClick = (email) => {
     setSelectedEmail(email);
@@ -42,60 +42,65 @@ const Inbox = () => {
 
   const markEmailAsRead = async (email) => {
     try {
-      const updatedEmail = {...email,read:true}
-  
-        // Ensure we are updating the correct email in Firebase
-        await fetch(
-          `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${myEmailId}/inbox/${email.mailId}.json`,
-          {
-            method: "PUT", // Use PATCH instead of PUT to update only the 'read' status
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedEmail),
-          }
-        );
-  
-        // Update the read status locally after successful update in Firebase
-        dispatch(inboxActions.markAsRead(email.mailId));
-      
+      const updatedEmail = { ...email, read: true };
+
+      // Ensure we are updating the correct email in Firebase
+      await fetch(
+        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${myEmailId}/inbox/${email.mailId}.json`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedEmail),
+        }
+      );
+
+      // Update the read status locally after successful update in Firebase
+      dispatch(inboxActions.markAsRead(email.mailId));
     } catch (error) {
       console.error("Error marking email as read:", error);
     }
   };
-  
 
   const nullTheSelectedEmail = () => {
     setSelectedEmail(null);
     // dispatch(inboxActions.markAsRead(id));
   };
 
-  const DeleteMail = async(email) =>{
+  const DeleteMail = async (email) => {
     setSelectedEmail(null);
-    dispatch(inboxActions.deleteMail(email.mailId))
-    try{
-      const response = fetch(`https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${myEmailId}/inbox/${email.mailId}.json`,{
-        method: 'DELETE',
-      })
-      if(!response.ok){
-        throw new Error('Failed to delete email')
+    dispatch(inboxActions.deleteMail(email.mailId));
+    try {
+      const response = fetch(
+        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${myEmailId}/inbox/${email.mailId}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete email");
       }
-      
-        
-    }
-    catch(error){
+    } catch (error) {
       console.error("Error deleting email:", error);
     }
-  }
+  };
 
   return (
     <Container fluid>
       <Row>
         {/* Left Sidebar */}
         <Col md={2} style={{ borderRight: "1px solid #ddd", height: "100vh" }}>
-          <a href="/welcome"><h6 className="m-3">Inbox</h6></a>
-          <a href="/welcome"><h6 className="m-3">Sent</h6></a>
-          <a href="/welcome"><h6 className="m-3">Unread</h6></a>
+          <Button onClick={() => navigate("/writeEmail")}>Compose</Button>
+          <a href="/inbox">
+            <h6 className="m-3">Inbox</h6>
+          </a>
+          <a href="/sent">
+            <h6 className="m-3">Sent</h6>
+          </a>
+          <h6 className="m-3">
+            Unread<span>-{emails.filter((email) => !email.read).length}</span>
+          </h6>
         </Col>
 
         {/* Right Section */}
@@ -103,7 +108,18 @@ const Inbox = () => {
           <Col md={10} style={{ padding: "10px" }}>
             <Card>
               <Card.Body>
-                <Card.Title>{selectedEmail.subject}</Card.Title>
+                <Card.Title style={{ float: "left" }}>
+                  {selectedEmail.subject}
+                </Card.Title>
+                <Button
+                  variant="danger"
+                  style={{ float: "right", width: "100px" }}
+                  onClick={() => DeleteMail(selectedEmail)}
+                >
+                  Delete
+                </Button>
+                <br/>
+                <br/>
                 <Card.Text>
                   <strong>From:</strong> {selectedEmail.from} <br />
                   <strong>Message:</strong> {selectedEmail.content}
@@ -111,9 +127,6 @@ const Inbox = () => {
               </Card.Body>
               <Button style={{ width: "100px" }} onClick={nullTheSelectedEmail}>
                 Back
-              </Button>
-              <Button style={{ width: "100px" }} onClick={()=>DeleteMail(selectedEmail)}>
-                Delete
               </Button>
             </Card>
           </Col>

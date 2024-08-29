@@ -52,7 +52,7 @@ const Login = () => {
       dispatch(authActions.login({token:data.idToken,email:data.email}))
       console.log(data);
       setFormData({email:'',password:'',confirmPassword:''});
-      navigate('/welcome');
+      navigate('/inbox');
     } catch (error) {
       console.log(error);
     }

@@ -13,10 +13,9 @@ const Header = () => {
     <>
       <Navbar>
         <Container>
-          <Navbar.Brand href="/welcome">V-MAIL</Navbar.Brand>
+          <Navbar.Brand href="/inbox">V-MAIL</Navbar.Brand>
           <Nav>
           {!loggedIn &&<Nav.Link href="/auth">Login</Nav.Link>}
-          {loggedIn && <Nav.Link href="/welcome" >Welcome</Nav.Link>}
           </Nav>
         </Container>
         <Nav>{loggedIn && <Button onClick={logoutHandler}>Logout</Button>}</Nav>

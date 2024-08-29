@@ -85,7 +85,7 @@ const WriteMails = () => {
     <Container>
       <Button
         onClick={() => {
-          navigate("/welcome");
+          navigate("/inbox");
         }}
       >
         Go Back
