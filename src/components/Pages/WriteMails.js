@@ -3,11 +3,14 @@ import { Form, Button, Container } from "react-bootstrap";
 import { EditorState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import  {useNavigate} from 'react-router-dom';
 
 const WriteMails = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+
+  const navigate = useNavigate();
 
   const [toEmail, setToEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -76,6 +79,7 @@ const WriteMails = () => {
 
   return (
     <Container>
+      <Button onClick={()=>{navigate('/welcome')}}>Go Back</Button>
       <Form onSubmit={sendEmail}>
         <Form.Group>
           <Form.Label>To</Form.Label>
