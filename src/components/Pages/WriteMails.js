@@ -3,7 +3,7 @@ import { Form, Button, Container } from "react-bootstrap";
 import { EditorState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import  {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const WriteMails = () => {
   const [editorState, setEditorState] = useState(() =>
@@ -19,67 +19,77 @@ const WriteMails = () => {
   const handleEditorChange = (state) => {
     setEditorState(state);
   };
-
   const sendEmail = async (e) => {
     e.preventDefault();
     const mailContent = editorState.getCurrentContent().getPlainText();
-
+  
+    const mailId = Date.now().toString(); // Generate mailId once
+    const receiverEmail = toEmail.replace(".", "");
+    const senderEmailFormatted = senderEmail.replace(".", "");
+  
     const emailData = {
       to: toEmail,
       subject: subject,
       content: mailContent,
       from: senderEmail,
       timeStamp: new Date().toISOString(),
+      read: false,
+      mailId: mailId // Include mailId in the emailData
     };
-
-    console.log(emailData);
-
-    const receiverEmail = emailData.to.replace(".", "");
-    const senderEmailFormatted = emailData.from.replace(".", "");
-
+  
     try {
       const receiverResponse = await fetch(
-        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${receiverEmail}/inbox/.json`,
+        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${receiverEmail}/inbox/${mailId}.json`,
         {
-          method: "POST",
+          method: "PUT", // Using PUT instead of POST to avoid duplicate entries
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(emailData),
         }
       );
+  
       if (!receiverResponse.ok) {
         throw new Error("Failed to send email to receiver");
       }
-
+  
       const senderResponse = await fetch(
-        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${senderEmailFormatted}/sent/.json`,
+        `https://mailboxclient-5eabe-default-rtdb.firebaseio.com/mails/${senderEmailFormatted}/sent/${mailId}.json`,
         {
-          method: "POST",
+          method: "PUT", // Using PUT instead of POST
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(emailData),
         }
       );
+  
       if (!senderResponse.ok) {
         throw new Error("Failed to send email from sender");
       }
-
+  
+      // Clear form inputs and reset editor
       setToEmail("");
       setSubject("");
       setEditorState(EditorState.createEmpty());
-
+  
       alert("Email sent successfully!");
     } catch (error) {
       console.log(error);
       alert("Error sending email: " + error.message);
     }
   };
+  
 
   return (
     <Container>
-      <Button onClick={()=>{navigate('/welcome')}}>Go Back</Button>
+      <Button
+        onClick={() => {
+          navigate("/welcome");
+        }}
+      >
+        Go Back
+      </Button>
       <Form onSubmit={sendEmail}>
         <Form.Group>
           <Form.Label>To</Form.Label>
