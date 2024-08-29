@@ -32,7 +32,12 @@ const Inbox = () => {
       }
     };
 
-    fetchEmails();
+    const intervalId = setInterval(() => {
+      fetchEmails();
+    }, 2000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [dispatch, myEmailId]);
 
   const handleEmailClick = (email) => {
@@ -118,8 +123,8 @@ const Inbox = () => {
                 >
                   Delete
                 </Button>
-                <br/>
-                <br/>
+                <br />
+                <br />
                 <Card.Text>
                   <strong>From:</strong> {selectedEmail.from} <br />
                   <strong>Message:</strong> {selectedEmail.content}

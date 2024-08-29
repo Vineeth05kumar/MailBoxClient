@@ -1,13 +1,17 @@
 import { Navbar, Nav, Container,Button } from "react-bootstrap";
 import { useSelector,useDispatch } from "react-redux";
 import { authActions } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const loggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   const logoutHandler = ()=>{
     dispatch(authActions.logout());
+    navigate('/auth');
   }
   return (
     <>
